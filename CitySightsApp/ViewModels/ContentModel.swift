@@ -12,6 +12,7 @@ class ContentModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     
     var locationManager = CLLocationManager()
+    @Published var authorizationState = CLAuthorizationStatus.notDetermined
     @Published var restaurants = [Business]()
     @Published var sights = [Business]()
     
@@ -26,6 +27,7 @@ class ContentModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         
     }
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        authorizationState = locationManager.authorizationStatus
         if  locationManager.authorizationStatus == .authorizedAlways ||
                 locationManager.authorizationStatus == .authorizedWhenInUse {
             locationManager.startUpdatingLocation()
@@ -70,13 +72,20 @@ class ContentModel: NSObject, ObservableObject, CLLocationManagerDelegate {
                     do {
                         let decoder = JSONDecoder()
                         let result = try decoder.decode(BusinessSearch.self, from: data!)
+                        var businesses = result.businesses
+                        businesses.sort { (b1, b2) -> Bool in
+                            return b1.distance ?? 0 < b2.distance ?? 0
+                        }
+                        for b in result.businesses {
+                            b.getImageData()
+                        }
                         
                         DispatchQueue.main.async {
                             if category == Constants.sightsKey {
-                                self.sights = result.businesses
+                                self.sights = businesses
                                 
                             } else if category == Constants.restaurantsKey {
-                                self.restaurants = result.businesses
+                                self.restaurants = businesses
                             }
                         }
                        
