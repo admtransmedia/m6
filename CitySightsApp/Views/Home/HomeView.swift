@@ -12,6 +12,7 @@ struct HomeView: View {
     @State var isMapShowing = false
     var body: some View {
         if model.restaurants.count != 0 || model.sights.count != 0 {
+            NavigationView {
             if !isMapShowing {
                 VStack(alignment: .leading){
                     HStack {
@@ -26,6 +27,7 @@ struct HomeView: View {
                     
                 }
                 .padding([.horizontal, .top])
+                .navigationBarHidden(true)
                 
                 
                 
@@ -34,7 +36,7 @@ struct HomeView: View {
                 
             }
             
-            
+        }
             
             
             

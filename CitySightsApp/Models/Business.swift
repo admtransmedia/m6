@@ -49,6 +49,11 @@ class Business:Decodable, Identifiable, ObservableObject {
             }
             dataTask.resume()
         }
+
+    }
+    static func getTestData() -> Business {
+        let b = Business()
+        return b
     }
     
     enum CodingKeys: String, CodingKey {
